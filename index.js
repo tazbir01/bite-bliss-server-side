@@ -58,6 +58,21 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/cart/:id', async(req, res)=>{
+      const id = req.params.id;
+      const quary = {_id: ObjectId(id)}
+      const result = await cartCollection.findOne(quary)
+      res.send(result)
+    })
+
+    app.delete('/cart/:id', async(req, res)=>{
+      const id = req.params.id
+      console.log("please delete from database", id)
+      const quary = {_id: id}
+      const result = await cartCollection.deleteOne(quary)
+      res.send(result)
+    })
+
 
     // brands api
     app.get('/brands' , async(req, res)=>{
