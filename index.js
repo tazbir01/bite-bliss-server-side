@@ -31,58 +31,79 @@ async function run() {
     const brandCollection = client.db('biteblissDB').collection('brands')
     const cartCollection = client.db('biteblissDB').collection('cart')
 
-    app.post('/products', async(req, res)=>{
+    app.post('/products', async (req, res) => {
       const newProduct = req.body
       console.log(newProduct)
       const result = await biteblissCollection.insertOne(newProduct)
       res.send(result)
     })
 
-    app.get('/products', async(req, res)=>{
+    app.get('/products', async (req, res) => {
       const cursor = biteblissCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.get('/products/:id', async(req,res)=>{
+    app.get('/products/:id', async (req, res) => {
       const id = req.params.id;
-      const cursor = {_id: new ObjectId(id)};
+      const cursor = { _id: new ObjectId(id) };
       const result = await biteblissCollection.findOne(cursor)
       res.send(result)
     })
 
+    app.put('/products/:id', async (req, res) => {
+      const id = req.params.id;
+      const cursor = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateProduct = req.body;
+      const product = {
+        $set: {
+          name: updateProduct.name,
+          brand: updateProduct.brand,
+          price: updateProduct.price,
+          type: updateProduct.type,
+          image: updateProduct.image,
+          rating: updateProduct.rating,
+          description: updateProduct.description
+        }
+      }
+      const result = await biteblissCollection.updateOne(cursor, product, options)
+      console.log(result)
+      res.send(result)
+    })
+
     // cart api
-    app.post('/cart', async(req,res)=>{
+    app.post('/cart', async (req, res) => {
       const product = req.body
       console.log(product)
       const result = await cartCollection.insertOne(product)
       res.send(result)
     })
 
-    app.get('/cart', async(req, res)=>{
+    app.get('/cart', async (req, res) => {
       const cursor = cartCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.get('/cart/:id', async(req, res)=> {
+    app.get('/cart/:id', async (req, res) => {
       const id = req.params.id;
-      const quary = {_id: id}
+      const quary = { _id: id }
       const result = await cartCollection.findOne(quary)
       res.send(result)
     })
 
-    app.delete('/cart/:id', async(req, res)=>{
+    app.delete('/cart/:id', async (req, res) => {
       const id = req.params.id
       console.log("please delete from database", id)
-      const quary = {_id: id}
+      const quary = { _id: id }
       const result = await cartCollection.deleteOne(quary)
       res.send(result)
     })
 
 
     // brands api
-    app.get('/brands' , async(req, res)=>{
+    app.get('/brands', async (req, res) => {
       const cursor = brandCollection.find()
       const result = await cursor.toArray()
       res.send(result)
@@ -99,10 +120,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', (req, res)=>{
-    res.send('Mongodb server is running')
+app.get('/', (req, res) => {
+  res.send('Mongodb server is running')
 })
 
-app.listen(port, ()=>{
-    console.log(`server is running on port: ${port}`)
+app.listen(port, () => {
+  console.log(`server is running on port: ${port}`)
 })
