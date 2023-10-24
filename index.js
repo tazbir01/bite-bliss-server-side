@@ -44,6 +44,13 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/products/:id', async(req,res)=>{
+      const id = req.params.id;
+      const cursor = {_id: new ObjectId(id)};
+      const result = await biteblissCollection.findOne(cursor)
+      res.send(result)
+    })
+
     // cart api
     app.post('/cart', async(req,res)=>{
       const product = req.body
@@ -58,9 +65,9 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/cart/:id', async(req, res)=>{
+    app.get('/cart/:id', async(req, res)=> {
       const id = req.params.id;
-      const quary = {_id: ObjectId(id)}
+      const quary = {_id: id}
       const result = await cartCollection.findOne(quary)
       res.send(result)
     })
